@@ -26,6 +26,7 @@ export function InfiniteGridList({
   listEmptyMessage,
   hasNextPage,
   loading,
+  error,
   children,
   onLoadMore,
 }: InfiniteGridListProps) {
@@ -33,8 +34,9 @@ export function InfiniteGridList({
     <>
       <GridList listEmptyMessage={listEmptyMessage}>{children}</GridList>
       <InfiniteScrollSentry
-        loading={loading}
         hasNextPage={hasNextPage}
+        loading={loading}
+        error={error}
         onLoadMore={onLoadMore}
       />
     </>

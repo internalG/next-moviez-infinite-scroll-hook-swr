@@ -19,8 +19,9 @@ export function PeopleInfiniteGridList({
   firstPage,
   pageKeyTemplate,
 }: PeopleInfiniteListProps) {
-  const { data, setSize, isValidating } = useSWRInfinite<
-    PaginationResponse<PersonListItem>
+  const { data, error, setSize, isValidating } = useSWRInfinite<
+    PaginationResponse<PersonListItem>,
+    Error
   >((pageIndex: number) => getInfiniteSwrKey({ pageIndex, pageKeyTemplate }), {
     fallbackData: [firstPage],
     // To prevent fetching the first page when the next page is loading.
@@ -34,8 +35,9 @@ export function PeopleInfiniteGridList({
 
   return (
     <InfiniteGridList
-      loading={isValidating}
       hasNextPage={hasNextPage}
+      loading={isValidating}
+      error={error}
       onLoadMore={() => setSize((currentSize) => currentSize + 1)}
     >
       {getAllPageResults(data).map((person) => {

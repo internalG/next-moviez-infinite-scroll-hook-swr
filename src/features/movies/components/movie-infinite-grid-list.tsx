@@ -21,8 +21,9 @@ export function MovieInfiniteGridList({
   pageKeyTemplate,
   skipFirstMovie,
 }: MovieInfiniteGridListProps) {
-  const { data, setSize, isValidating } = useSWRInfinite<
-    PaginationResponse<MovieListItem>
+  const { data, error, setSize, isValidating } = useSWRInfinite<
+    PaginationResponse<MovieListItem>,
+    Error
   >((pageIndex: number) => getInfiniteSwrKey({ pageIndex, pageKeyTemplate }), {
     fallbackData: firstPage ? [firstPage] : [],
     // To prevent fetching the first page when the next page is loading.
@@ -36,8 +37,9 @@ export function MovieInfiniteGridList({
 
   return (
     <InfiniteGridList
-      loading={isValidating}
       hasNextPage={hasNextPage}
+      loading={isValidating}
+      error={error}
       onLoadMore={() => setSize((currentSize) => currentSize + 1)}
     >
       {getAllPageResults(data).map((movie, i) => {
