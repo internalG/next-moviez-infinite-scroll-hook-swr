@@ -1,13 +1,8 @@
 'use client';
 
 import type { PaginationResponse } from '@/core/shared/types';
-import { getAllPageResults, getHasNextPage } from '@/core/shared/utils';
-import {
-  InfiniteGridList,
-  getInfiniteSwrKey,
-} from '@/core/ui/components/infinite-grid-list';
+import { InfiniteScrollList } from '@/core/ui/components/infinite-scroll-list';
 import type { PersonListItem } from '@/features/people/types';
-import useSWRInfinite from 'swr/infinite';
 import { PersonCard } from './person-card';
 
 type PeopleInfiniteListProps = {
@@ -19,34 +14,11 @@ export function PeopleInfiniteGridList({
   firstPage,
   pageKeyTemplate,
 }: PeopleInfiniteListProps) {
-  const { data, error, setSize, isValidating } = useSWRInfinite<
-    PaginationResponse<PersonListItem>,
-    Error
-  >((pageIndex: number) => getInfiniteSwrKey({ pageIndex, pageKeyTemplate }), {
-    fallbackData: [firstPage],
-    // To prevent fetching the first page when the next page is loading.
-    revalidateFirstPage: false,
-    // To prevent refetching the first page on client-side,
-    // since we already provide it through `fallbackData` by fetching it on the server-side.
-    revalidateIfStale: false,
-  });
-
-  const hasNextPage = getHasNextPage(data);
-
   return (
-    <InfiniteGridList
-      hasNextPage={hasNextPage}
-      loading={isValidating}
-      error={error}
-      onLoadMore={() => setSize((currentSize) => currentSize + 1)}
-    >
-      {getAllPageResults(data).map((person) => {
-        return (
-          <li key={person.id}>
-            <PersonCard person={person} />
-          </li>
-        );
-      })}
-    </InfiniteGridList>
+    <InfiniteScrollList
+      firstPage={firstPage}
+      pageKeyTemplate={pageKeyTemplate}
+      renderItem={(person) => <PersonCard person={person} />}
+    />
   );
 }
