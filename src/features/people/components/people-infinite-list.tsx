@@ -1,7 +1,11 @@
 'use client';
 
 import type { PaginationResponse } from '@/core/shared/types';
-import { InfiniteScrollList } from '@/core/ui/components/infinite-scroll-list';
+import { GridList } from '@/core/ui/components/grid-list';
+import {
+  SWRInfiniteScroll,
+  useSWRInfiniteScroll,
+} from '@/core/ui/components/swr-infinite-scroll';
 import type { PersonListItem } from '@/features/people/types';
 import { PersonCard } from './person-card';
 
@@ -10,15 +14,23 @@ type PeopleInfiniteListProps = {
   pageKeyTemplate: string;
 };
 
-export function PeopleInfiniteGridList({
+export function PeopleInfiniteList({
   firstPage,
   pageKeyTemplate,
 }: PeopleInfiniteListProps) {
+  const { items, hasNextPage, loading, error, loadMore } =
+    useSWRInfiniteScroll<PersonListItem>(pageKeyTemplate, firstPage);
+
   return (
-    <InfiniteScrollList
-      firstPage={firstPage}
-      pageKeyTemplate={pageKeyTemplate}
-      renderItem={(person) => <PersonCard person={person} />}
-    />
+    <GridList>
+      <SWRInfiniteScroll
+        items={items}
+        renderItem={(person) => <PersonCard person={person} />}
+        hasNextPage={hasNextPage}
+        loading={loading}
+        error={error}
+        onLoadMore={loadMore}
+      />
+    </GridList>
   );
 }

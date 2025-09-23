@@ -1,7 +1,11 @@
 'use client';
 
 import type { Maybe, PaginationResponse } from '@/core/shared/types';
-import { InfiniteScrollList } from '@/core/ui/components/infinite-scroll-list';
+import { GridList } from '@/core/ui/components/grid-list';
+import {
+  SWRInfiniteScroll,
+  useSWRInfiniteScroll,
+} from '@/core/ui/components/swr-infinite-scroll';
 import { MovieCard } from '@/features/movies/components/movie-card';
 import type { MovieListItem } from '@/features/movies/types';
 
@@ -16,14 +20,23 @@ export function MovieInfiniteGridList({
   pageKeyTemplate,
   skipFirstMovie,
 }: MovieInfiniteGridListProps) {
+  const { items, hasNextPage, loading, error, loadMore } =
+    useSWRInfiniteScroll<MovieListItem>(pageKeyTemplate, firstPage);
+
   if (!firstPage) return null;
 
+  const movies = skipFirstMovie ? items.slice(1) : items;
+
   return (
-    <InfiniteScrollList
-      firstPage={firstPage}
-      pageKeyTemplate={pageKeyTemplate}
-      skipFirstItem={skipFirstMovie}
-      renderItem={(movie) => <MovieCard movie={movie} />}
-    />
+    <GridList>
+      <SWRInfiniteScroll
+        items={movies}
+        renderItem={(movie) => <MovieCard movie={movie} />}
+        hasNextPage={hasNextPage}
+        loading={loading}
+        error={error}
+        onLoadMore={loadMore}
+      />
+    </GridList>
   );
 }

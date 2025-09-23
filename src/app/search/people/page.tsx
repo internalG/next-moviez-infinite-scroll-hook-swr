@@ -5,7 +5,7 @@ import { parseSearchParams } from '@/core/routing/utils';
 import { FIRST_PAGE } from '@/core/shared/utils';
 import { Padder } from '@/core/ui/components/padder';
 import { Title } from '@/core/ui/components/title';
-import { PeopleInfiniteGridList } from '@/features/people/components/people-infinite-list';
+import { PeopleInfiniteList } from '@/features/people/components/people-infinite-list';
 import { searchPeople } from '@/features/search/data';
 import { notFound } from 'next/navigation';
 import { z } from 'zod';
@@ -41,7 +41,7 @@ export default async function SearchPeoplePage(props: SearchPeoplePageProps) {
       <main>
         <Padder>
           <Title level={1} title={`People Search Results for: ${query}`} />
-          <PeopleInfiniteGridList
+          <PeopleInfiniteList
             pageKeyTemplate={`/api/search/people?${infiniteListSearchParams.toString()}`}
             firstPage={firstPage}
           />
