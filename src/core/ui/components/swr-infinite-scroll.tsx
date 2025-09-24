@@ -1,11 +1,66 @@
 'use client';
 
-import type { Maybe, PaginationResponse } from '@/core/shared/types';
-import { getAllPageResults, getHasNextPage } from '@/core/shared/utils';
-import { Alert } from '@mui/material';
 import useInfiniteScroll from 'react-infinite-scroll-hook';
 import useSWRInfinite from 'swr/infinite';
-import { LoadingIndicator } from './loading-indicator';
+
+// import { getAllPageResults, getHasNextPage } from '@/core/shared/utils';
+import _ from 'lodash';
+
+import { Box, CircularProgress , Alert } from '@mui/material';
+import { forwardRef } from 'react';
+
+
+export type Maybe<T> = T | null | undefined;
+export type PaginationResponse<Data> = {
+  results: Data[];
+  page: number;
+  total_pages: number;
+  total_results: number;
+};
+
+export function getAllPageResults<T extends { id: number | string }>(
+  allPages: Maybe<PaginationResponse<T>[]>,
+): T[] {
+  if (!allPages) return [];
+
+  const flatPages = allPages.flatMap((page) => page.results);
+
+  return _.uniqBy(flatPages, (item) => item.id);
+}
+
+export function getHasNextPage<T>(allPages: Maybe<PaginationResponse<T>[]>) {
+  const lastPage = allPages?.[allPages.length - 1];
+
+  if (!lastPage) return false;
+
+  return lastPage.page < lastPage.total_pages;
+}
+
+type LoadingIndicatorProps = {
+  loading: boolean;
+  children?: React.ReactNode;
+};
+
+export const LoadingIndicator = forwardRef<
+  React.ComponentRef<'div'>,
+  LoadingIndicatorProps
+>(function LoadingIndicator({ loading, children }, ref) {
+  if (!loading) return children;
+
+  return (
+    <Box
+      ref={ref}
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        marginY: 2,
+        flexGrow: 1,
+      }}
+    >
+      <CircularProgress aria-label="Loading..." size={48} color="secondary" />
+    </Box>
+  );
+});
 
 function getInfiniteSWRKey({
   pageIndex,
